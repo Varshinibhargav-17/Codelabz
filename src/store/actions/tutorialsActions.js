@@ -753,7 +753,6 @@ export const removeTutorialMedia =
             url,
             type,
             thumbnail: type === "image" ? url : null,
-            uploadedAt: null
           })
         });
 

@@ -20,6 +20,7 @@ import MovieIcon from "@mui/icons-material/Movie";
 import Select from "react-select";
 import { common } from "@mui/material/colors";
 import CloseIcon from "@mui/icons-material/Close";
+import MediaUpload from "../subComps/MediaUpload";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -312,15 +313,11 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
             ))}
           </div>
 
-          <IconButton>
-            <ImageIcon />
-          </IconButton>
-          <IconButton>
-            <MovieIcon />
-          </IconButton>
-          <IconButton>
-            <DescriptionIcon />
-          </IconButton>
+          <MediaUpload
+          owner={formValue.owner}
+          tutorial_id={null}
+          mediaFiles={[]}
+          />
 
           <div className="mb-0">
             <div style={{ float: "right" }}>

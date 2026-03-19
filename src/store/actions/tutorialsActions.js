@@ -687,3 +687,86 @@ export const deleteNotification =
       console.log(e.message);
     }
   };
+
+export const uploadTutorialMedia =
+  (owner, tutorial_id, files) => async (firebase, firestore, dispatch) => {
+    try {
+      dispatch({ type: actions.TUTORIAL_IMAGE_UPLOAD_START });
+
+      const type = await checkUserOrOrgHandle(owner)(firebase, firestore);
+      const storagePath = `tutorials/${type}/${owner}/${tutorial_id}/media`;
+
+      for (const file of files) {
+        // Determine media type
+        let mediaType = "document";
+        if (file.type.startsWith("image/")) mediaType = "image";
+        else if (file.type.startsWith("video/")) mediaType = "video";
+
+        await firebase.uploadFiles(storagePath, [file], "tutorials", {
+          metadataFactory: (uploadRes, firebase, metadata, downloadURL) => {
+            return {
+              mediaFiles: firebase.firestore.FieldValue.arrayUnion({
+                name: metadata.name,
+                url: downloadURL,
+                type: mediaType,
+                thumbnail: mediaType === "image" ? downloadURL : null,
+                uploadedAt: new Date().toISOString()
+              })
+            };
+          },
+          documentId: tutorial_id
+        });
+      }
+
+      await getCurrentTutorialData(owner, tutorial_id)(
+        firebase,
+        firestore,
+        dispatch
+      );
+
+      dispatch({ type: actions.TUTORIAL_IMAGE_UPLOAD_SUCCESS });
+    } catch (e) {
+      dispatch({
+        type: actions.TUTORIAL_IMAGE_UPLOAD_FAIL,
+        payload: e.message
+      });
+    }
+  };
+
+export const removeTutorialMedia =
+  (owner, tutorial_id, name, url, type) =>
+  async (firebase, firestore, dispatch) => {
+    try {
+      dispatch({ type: actions.TUTORIAL_IMAGE_DELETE_START });
+
+      const ownerType = await checkUserOrOrgHandle(owner)(firebase, firestore);
+      const storagePath = `tutorials/${ownerType}/${owner}/${tutorial_id}/media/${name}`;
+
+      await firebase.deleteFile(storagePath);
+
+      await firestore
+        .collection("tutorials")
+        .doc(tutorial_id)
+        .update({
+          mediaFiles: firebase.firestore.FieldValue.arrayRemove({
+            name,
+            url,
+            type,
+            thumbnail: type === "image" ? url : null,
+          })
+        });
+
+      await getCurrentTutorialData(owner, tutorial_id)(
+        firebase,
+        firestore,
+        dispatch
+      );
+
+      dispatch({ type: actions.TUTORIAL_IMAGE_DELETE_SUCCESS });
+    } catch (e) {
+      dispatch({
+        type: actions.TUTORIAL_IMAGE_DELETE_FAIL,
+        payload: e.message
+      });
+    }
+  };

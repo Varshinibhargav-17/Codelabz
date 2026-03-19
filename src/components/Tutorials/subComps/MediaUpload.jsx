@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   Box,
-  Button,
   Typography,
   IconButton,
   CircularProgress,
@@ -29,7 +28,7 @@ const MediaUpload = ({ owner, tutorial_id, mediaFiles = [] }) => {
   const [activeType, setActiveType] = useState(null);
 
   const uploading = useSelector(
-    ({ tutorials: { images: { uploading } } }) => uploading
+    state => state?.tutorials?.images?.uploading
   );
 
   const handleFileChange = (e, type) => {
@@ -78,7 +77,7 @@ const MediaUpload = ({ owner, tutorial_id, mediaFiles = [] }) => {
           onClick={() => triggerUpload("image")}
           title="Upload Image"
           color="primary"
-          disabled={uploading}
+          disabled={uploading || !owner || !tutorial_id}
         >
           <ImageIcon />
         </IconButton>
@@ -86,7 +85,7 @@ const MediaUpload = ({ owner, tutorial_id, mediaFiles = [] }) => {
           onClick={() => triggerUpload("video")}
           title="Upload Video"
           color="primary"
-          disabled={uploading}
+          disabled={uploading || !owner || !tutorial_id}
         >
           <MovieIcon />
         </IconButton>
@@ -94,7 +93,7 @@ const MediaUpload = ({ owner, tutorial_id, mediaFiles = [] }) => {
           onClick={() => triggerUpload("document")}
           title="Upload Document"
           color="primary"
-          disabled={uploading}
+          disabled={uploading || !owner || !tutorial_id}
         >
           <DescriptionIcon />
         </IconButton>

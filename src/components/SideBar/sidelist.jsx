@@ -4,7 +4,6 @@ import {
   MenuItem,
   MenuList,
   ListItemIcon,
-  ListItemText,
   Paper
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
@@ -63,20 +62,6 @@ const useStyles = makeStyles(() => ({
     transition: "background-color 0.15s ease !important"
   },
 
-  textInactive: {
-    fontSize: "13.5px",
-    fontWeight: 400,
-    color: "#4a5568",
-    letterSpacing: "0.01em"
-  },
-
-  textActive: {
-    fontSize: "13.5px",
-    fontWeight: 600,
-    color: "#03AAFA",
-    letterSpacing: "0.01em"
-  },
-
   notification: {
     color: "#555",
     opacity: 0.5
@@ -101,6 +86,20 @@ const activeItemStyle = {
   borderLeft: "4px solid #03AAFA",
   borderRadius: "10px",
   paddingLeft: "10px"
+};
+
+const activeTextStyle = {
+  fontSize: "13.5px",
+  fontWeight: 600,
+  color: "#03AAFA",
+  letterSpacing: "0.01em"
+};
+
+const inactiveTextStyle = {
+  fontSize: "13.5px",
+  fontWeight: 400,
+  color: "#4a5568",
+  letterSpacing: "0.01em"
 };
 
 const SideList = ({
@@ -172,15 +171,12 @@ const SideList = ({
                         )}
                       </ListItemIcon>
                     )}
-                    <ListItemText
-                      data-testId={item.name}
-                      className={
-                        active ? classes.textActive : classes.textInactive
-                      }
-                      disableTypography
+                    <span
+                      data-testid={item.name}
+                      style={active ? activeTextStyle : inactiveTextStyle}
                     >
                       {item.name}
-                    </ListItemText>
+                    </span>
                   </MenuItem>
                 </NavLink>
               )}
@@ -210,13 +206,12 @@ const SideList = ({
                       </Badge>
                     </ListItemIcon>
                   )}
-                  <ListItemText
-                    data-testId={item.name}
-                    className={classes.textInactive}
-                    disableTypography
+                  <span
+                    data-testid={item.name}
+                    style={inactiveTextStyle}
                   >
                     {item.name}
-                  </ListItemText>
+                  </span>
                 </MenuItem>
               )}
               {!item.link && item.onClick && (
@@ -240,13 +235,12 @@ const SideList = ({
                       />
                     </ListItemIcon>
                   )}
-                  <ListItemText
-                    data-testId={item.name}
-                    className={classes.textInactive}
-                    disableTypography
+                  <span
+                    data-testid={item.name}
+                    style={inactiveTextStyle}
                   >
                     {item.name}
-                  </ListItemText>
+                  </span>
                 </MenuItem>
               )}
             </div>

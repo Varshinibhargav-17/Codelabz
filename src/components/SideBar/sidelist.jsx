@@ -1,73 +1,108 @@
 import React from "react";
-import { NavLink, useHistory, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   MenuItem,
   MenuList,
   ListItemIcon,
   ListItemText,
-  Paper,
-  Grid,
-  Button
+  Paper
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   icons: {
-    width: "20px",
-    height: "20px"
+    width: "18px",
+    height: "18px",
+    opacity: 0.45,
+    transition: "opacity 0.2s ease"
+  },
+
+  iconsActive: {
+    width: "18px",
+    height: "18px",
+    opacity: 1,
+    filter:
+      "brightness(0) saturate(100%) invert(47%) sepia(98%) saturate(1500%) hue-rotate(175deg) brightness(103%) contrast(101%)"
   },
 
   listIcon: {
-    minWidth: "20px",
-    marginRight: "10px"
+    minWidth: "16px",
+    marginRight: "12px"
   },
 
   paper: {
     display: "flex",
     minWidth: "100%",
     border: "none",
-    backgrounColor: "transparent",
+    backgroundColor: "transparent",
     boxShadow: "none"
   },
 
   navLink: {
     display: "flex",
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
+    textDecoration: "none"
   },
 
   menuList: {
     border: "none",
-    boxShadow: "none"
+    boxShadow: "none",
+    padding: "8px 0",
+    width: "100%"
   },
 
   menuItem: {
     width: "100%",
-    height: "100%",
-    borderRadius: "100px",
-    paddingTop: "8px",
-    paddingBottom: "3px",
-    margin: "3px 0 3px 0"
+    borderRadius: "10px !important",
+    padding: "10px 14px !important",
+    margin: "2px 0 !important",
+    minHeight: "44px !important",
+    transition: "background-color 0.15s ease !important"
+  },
+
+  textInactive: {
+    fontSize: "13.5px",
+    fontWeight: 400,
+    color: "#4a5568",
+    letterSpacing: "0.01em"
+  },
+
+  textActive: {
+    fontSize: "13.5px",
+    fontWeight: 600,
+    color: "#03AAFA",
+    letterSpacing: "0.01em"
   },
 
   notification: {
-    color: "#000000"
+    color: "#555",
+    opacity: 0.5
   },
+
   customBadge: {
     color: "#ffffff",
     backgroundColor: "#03AAFA",
     fontSize: "0.6rem",
     height: "16px",
     minWidth: "16px"
+  },
+
+  itemWrapper: {
+    width: "100%",
+    padding: "0 8px"
   }
 }));
 
-/**
- * @description - This component renders the side bar menu
- * @returns
- */
+const activeItemStyle = {
+  backgroundColor: "#e0f2fe",
+  borderLeft: "4px solid #03AAFA",
+  borderRadius: "10px",
+  paddingLeft: "10px"
+};
+
 const SideList = ({
   menuItems = [],
   value,
@@ -80,26 +115,18 @@ const SideList = ({
   const classes = useStyles();
   const location = useLocation();
 
-  /**
-   * * Cases for rendering the menu items
-   *
-   * ? 1. item.link - If the item has a link, render a NavLink
-   * ? 2. item.onClick - If the item has an onClick, render a button
-   * ? if the item has neither, render a MenuItem with no onClick
-   *
-   */
+  const isActive = link => link === location.pathname;
+
   return (
     <Paper className={classes.paper} style={style}>
       <MenuList className={classes.menuList}>
         {menuItems.map(function (item, index) {
+          const active = item.link ? isActive(item.link) : false;
+
           return (
             <div
-              key="menu-items"
-              style={
-                item.link == location.pathname
-                  ? { background: "#d9f1fc", borderRadius: "100px" }
-                  : {}
-              }
+              key={`menu-item-${index}`}
+              className={classes.itemWrapper}
               data-testId={item?.dataTestId}
             >
               {item.link && (
@@ -111,6 +138,12 @@ const SideList = ({
                       onStateChange(index);
                     }}
                     className={classes.menuItem}
+                    style={active ? activeItemStyle : {}}
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: active ? "#cce8fa" : "#f4f9ff"
+                      }
+                    }}
                   >
                     {item.img && (
                       <ListItemIcon className={classes.listIcon}>
@@ -123,26 +156,27 @@ const SideList = ({
                             <img
                               alt={"..."}
                               src={item.img}
-                              className={classes.icons}
+                              className={
+                                active ? classes.iconsActive : classes.icons
+                              }
                             />
                           </Badge>
                         ) : (
                           <img
                             alt={"..."}
                             src={item.img}
-                            className={classes.icons}
+                            className={
+                              active ? classes.iconsActive : classes.icons
+                            }
                           />
                         )}
                       </ListItemIcon>
                     )}
                     <ListItemText
                       data-testId={item.name}
-                      style={{
-                        fontWeight:
-                          item?.id && value === item?.id ? "bold" : "normal",
-                        color:
-                          item?.link == location.pathname ? "#0293d9" : "black"
-                      }}
+                      className={
+                        active ? classes.textActive : classes.textInactive
+                      }
                       disableTypography
                     >
                       {item.name}
@@ -155,10 +189,12 @@ const SideList = ({
                   key={item.name}
                   onClick={() => {
                     if (onStateChange !== undefined) onStateChange(item);
-
                     toggleSlider();
                   }}
                   className={classes.menuItem}
+                  sx={{
+                    "&:hover": { backgroundColor: "#f4f9ff" }
+                  }}
                 >
                   {item.img && (
                     <ListItemIcon className={classes.listIcon}>
@@ -176,12 +212,7 @@ const SideList = ({
                   )}
                   <ListItemText
                     data-testId={item.name}
-                    style={{
-                      fontWeight:
-                        item?.id && value === item?.id ? "bold" : "normal",
-                      color:
-                        item?.link == location.pathname ? "#0293d9" : "black"
-                    }}
+                    className={classes.textInactive}
                     disableTypography
                   >
                     {item.name}
@@ -196,6 +227,9 @@ const SideList = ({
                     onStateChange(item);
                   }}
                   className={classes.menuItem}
+                  sx={{
+                    "&:hover": { backgroundColor: "#f4f9ff" }
+                  }}
                 >
                   {item.img && (
                     <ListItemIcon className={classes.listIcon}>
@@ -208,12 +242,7 @@ const SideList = ({
                   )}
                   <ListItemText
                     data-testId={item.name}
-                    style={{
-                      fontWeight:
-                        item?.id && value === item?.id ? "bold" : "normal",
-                      color:
-                        item?.link == location.pathname ? "#0293d9" : "black"
-                    }}
+                    className={classes.textInactive}
                     disableTypography
                   >
                     {item.name}

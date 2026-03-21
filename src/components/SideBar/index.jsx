@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Drawer } from "@mui/material";
 import SideList from "../SideBar/sidelist";
 import Home from "./../../assets/images/home.svg";
@@ -19,6 +19,7 @@ import { useFirebase } from "react-redux-firebase";
 import { useDispatch } from "react-redux";
 import { useAllowDashboard } from "../../helpers/customHooks";
 import Card from "@mui/material/Card";
+import "./styles.css"; // Import the new styles
 
 const useStyles = makeStyles(theme => ({
   drawer: {
@@ -136,6 +137,7 @@ const SideBar = ({
             value={value}
             onStateChange={onStateChange}
             toggleSlider={toggleSlider}
+            notificationCount={notificationCount}
             style={{
               position: "absolute"
             }}
